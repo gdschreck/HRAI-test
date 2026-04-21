@@ -37,13 +37,13 @@ export function AssessmentForm({ onSuccess }: { onSuccess?: () => void }) {
     setIsSubmitting(true)
 
     try {
-      const { error } = await supabase.from("assessments").insert({
+      const { error } = await supabase.from("assessments").upsert({
         user_id: user.id,
         user_name: user.fullName || user.username || user.firstName || "Unknown",
         email: user.primaryEmailAddress?.emailAddress || "",
         question: question.trim(),
         answer: answerNum,
-      })
+      }, { onConflict: 'user_id,question' })
 
       if (error) {
         console.error("Supabase error:", error)
